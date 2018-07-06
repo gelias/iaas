@@ -1,0 +1,5 @@
+---
+server_hostname: "{{ inventory_hostname }}"
+swap_file: "/swapfile"
+## swap size in megabytes
+swap_size: "2048" 

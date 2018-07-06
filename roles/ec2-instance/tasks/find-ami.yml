@@ -1,0 +1,18 @@
+---
+  - name: Finding latest generated AMI 
+    ec2_ami_find:
+      owner: self
+      region: "{{region}}"
+      ami_tags:
+        Name: "{{ ami_find_string }}"
+      no_result_action: fail
+      sort: creationDate
+      sort_order: descending
+    register: ami_find
+
+  - debug: var=ami_find.results[0]
+
+  
+  - set_fact:
+      image: "{{ami_find.results[0].ami_id}}"
+  

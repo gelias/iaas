@@ -1,0 +1,13 @@
+---
+instance_group_name: "launched"
+instance_disk_size: 8
+instance_type: t2.medium
+ami_find_string: centos-base*
+protect_termination: no
+aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
+aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+instance_volumes:
+  - device_name: /dev/sda1
+    volume_type: gp2
+    volume_size: "{{ instance_disk_size }}"
+    delete_on_termination: yes

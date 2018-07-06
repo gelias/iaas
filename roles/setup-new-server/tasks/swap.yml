@@ -1,0 +1,24 @@
+---
+
+  - stat: path={{ swap_file }}
+    register: swap
+
+  - debug: var=swap.stat.exists
+
+  - command: dd if=/dev/zero of={{ swap_file }} count={{ swap_size }} bs=1MiB
+    when: swap.stat.exists == false
+
+  - file: path={{ swap_file }} mode=0600
+    when: swap.stat.exists == false or (swap.stat.exists == true and swap.stat.mode != 0600)
+
+  - command: mkswap {{ swap_file }}
+    when: swap.stat.exists == false
+
+  - command: swapon {{ swap_file }}
+    when: swap.stat.exists == false
+
+  - lineinfile: 
+      dest: /etc/fstab
+      regexp: '^{{ swap_file }}'
+      line: '{{ swap_file }}   none    swap    sw    0    0'
+    when: swap.stat.exists == false

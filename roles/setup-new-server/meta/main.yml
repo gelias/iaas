@@ -1,0 +1,4 @@
+---
+dependencies:
+  - { role: setup-hostname, hostname: server_hostname }
+  - { role: base }

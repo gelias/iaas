@@ -1,0 +1,11 @@
+---
+  
+  - include: find-ami.yml
+    when: "find_latest_base|default(false)|bool"
+  
+  - include: create.yml
+    when: "create_instance|default(true)|bool"
+
+  - include: delete.yml
+    when: "delete_instance|default(false)|bool"
+    

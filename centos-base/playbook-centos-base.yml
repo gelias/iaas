@@ -1,0 +1,38 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    instance_name: "app-status"
+    keypair: "uniritter"
+    instance_type: t2.nano
+    security_group:
+      - "http"
+      - "https"
+      - "ssh"
+    image: "ami-9887c6e7"
+    region: us-east-1
+    vpc_subnet: "subnet-8efff7f8"
+  
+  roles:
+     - role: ec2-instance
+       vars:
+         - create_instance: yes
+         - delete_instance: no
+         - find_latest_base: no
+
+- hosts: launched
+  become: yes
+  gather_facts: Yes
+  roles:
+    - setup-new-server
+    - setup-node
+
+# - hosts: localhost
+#   connection: local
+#   gather_facts: false
+#   roles:
+#     - ec2-ami
+#     - role: ec2-instance
+#       vars:
+#         - delete_instance: yes
+#         - create_instance: no

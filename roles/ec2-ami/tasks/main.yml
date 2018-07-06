@@ -1,0 +1,15 @@
+---
+  - name: "Generate AMI for '{{ instance_id }}'"
+    ec2_ami:
+      region: "{{ aws_region }}"
+      instance_id: "{{ instance_id }}" 
+      no_reboot: no
+      wait: no
+      tags:
+        Name: "{{ ami_instance_name }}"
+      name: "{{ ami_instance_name }}"
+      state: present
+    register: image
+
+
+  - debug: var=image

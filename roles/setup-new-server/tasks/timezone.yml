@@ -1,0 +1,23 @@
+
+## http://www.ultrav.com.br/2014/04/17/configurando-timezone-rhel-centos/
+
+    - set_fact: 
+         default_timezone: "America/Sao_Paulo"
+      when: default_timezone is not defined
+
+    # - name: Check current timezone
+    #   shell: "/usr/bin/timedatectl | /usr/bin/grep -i 'time zone:' | /usr/bin/cut -d : -f 2 | /usr/bin/awk '{ print $1 }'"
+    #   register: current_zone
+    #   changed_when: False
+
+    # - name: "configure timezone to America-Sao_Paulo"
+    #   shell: /bin/timedatectl set-timezone "{{ default_timezone }}"
+      # when: current_zone.stdout != '{{ default_timezone }}'
+
+    - name: "set timezone to {{ default_timezone }}"
+      timezone: name="{{ default_timezone }}"
+      when: (ansible_distribution == "CentOS" and ansible_distribution_major_version >= "7")
+
+    - name: "[OLD METHOD] set timezone to {{ default_timezone }}"
+      file: src="/usr/share/zoneinfo/{{ default_timezone }}" dest=/etc/localtime  force=yes state=link
+      when: (ansible_distribution == "CentOS" and ansible_distribution_major_version <= "6") 

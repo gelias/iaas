@@ -1,0 +1,31 @@
+
+    - name: update swappiness stuff
+      sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: present
+      with_items:
+        - { name: "vm.swappiness", value: 0 }
+        - { name: "vm.overcommit_ratio", value: 90 }
+        - { name: "vm.overcommit_memory", value: 2 }
+        - { name: "vm.dirty_expire_centisecs", value: 500 }
+        - { name: "vm.dirty_writeback_centisecs", value: 250 }
+        - { name: "vm.dirty_ratio", value: 15 }
+        - { name: "vm.dirty_background_ratio", value: 3 }
+
+    - name: disable transparent huge pages
+      blockinfile:
+        dest: /etc/rc.d/rc.local
+        state: present
+        mode: "a+x"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK FOR TRANSPARENT HUGE PAGES"
+        content: |
+            ## https://newbiedba.wordpress.com/2015/09/07/disabling-transparent-huge-pages-in-centos-7-x/
+            if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+              echo never > /sys/kernel/mm/transparent_hugepage/enabled
+            fi
+            if test -f /sys/kernel/mm/transparent_hugepage/defrag; then
+              echo never > /sys/kernel/mm/transparent_hugepage/defrag
+            fi
+
+    #### lembrar de mudar o /etc/sysconfig/kernel pra não atualizar o kernel automaticamente

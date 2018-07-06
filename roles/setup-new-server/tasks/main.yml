@@ -1,0 +1,60 @@
+---
+    - name: Install needed repos
+      yum: name="{{ item }}" state=present
+      with_items:
+          - "epel-release"
+
+    - include: timezone.yml
+    - include: swap.yml
+    - include: ssh-setup.yml
+
+
+    - name: "ensure persistance of hostname on reboot"
+      lineinfile:
+        dest: /etc/cloud/cloud.cfg
+        regexp: "^preserve_hostname:"
+        line: "preserve_hostname: true"
+        state: present
+      ignore_errors: yes
+
+    - name: "disable selinux"
+      lineinfile:
+        dest: /etc/selinux/config
+        regexp: "^SELINUX="
+        line: "SELINUX=disabled"
+      notify:
+       - reboot sequence
+
+    - name: Force yum update
+      yum: name=* state=latest
+
+    - name: Install server utils
+      yum: name={{ item }} state=present
+      with_items:
+        - "net-tools"
+        - mlocate
+        - screen
+        - bzip2
+        - atop
+        - htop
+        - wget
+        - tzdata
+        - tar
+        - unzip
+        - git
+        - python2
+
+    - include: sysctl.yml
+
+    - name: update /etc/hosts
+      blockinfile:
+        dest: /etc/hosts
+        state: present
+        # marker: "# {mark} ANSIBLE MANAGED BLOCK FOR {{item.db}}"
+        # insertafter: '\[databases\]'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK FOR {{ item.address }}"
+        content: |
+            {{ item.address }} {{ item.alias }}
+      with_items:
+        - "{{ base_os_host_list | default([]) }}"
+      when: base_os_host_list is defined

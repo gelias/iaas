@@ -1,0 +1,36 @@
+---
+
+  - name: Install needed repos
+    yum: name={{ item }} state=present
+    with_items:
+      - "https://rpm.nodesource.com/pub_7.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm"
+
+
+  - name: Install needed packages
+    yum: name={{ item }} state=present
+    with_items:
+      - "nodejs-7.9.0-2nodesource.el7.centos.x86_64"
+      - make
+      - "gcc-c++"
+
+  - name: Install the node packages
+    npm:
+      name: "{{ item }}"
+      global: yes
+    with_items:
+      - npm
+
+  - name: creating the 'node' user
+    user:
+      name: node
+      state: present
+
+  - name: "enshure directory '{{ work_dir }}' exists"
+    file:
+      path: "{{ work_dir }}"
+      state: directory
+      owner: node
+      group: node
+
+
+  

@@ -1,0 +1,3 @@
+---
+work_dir: "/opt/workspace"
+systemd_dir: "/usr/lib/systemd/system/"
